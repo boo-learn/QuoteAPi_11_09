@@ -1,7 +1,7 @@
-from api import Resource, reqparse, db
+from api import Resource, reqparse, db, auth
 from api.models.author import AuthorModel
 from api.models.quote import QuoteModel
-
+from api.schemas.quote import quote_schema, quotes_schema
 
 class QuoteListResource(Resource):
     def get(self, author_id=None):
@@ -13,7 +13,7 @@ class QuoteListResource(Resource):
         if author is None:
             return {"Error": f"Author id={author_id} not found"}, 404
         quotes = author.quotes.all()
-        return [quote.to_dict() for quote in quotes], 200  # Возвращаем все цитаты автора
+        return quotes_schema.dump(quotes)
 
 
 class QuoteResource(Resource):
@@ -36,6 +36,7 @@ class QuoteResource(Resource):
             return {"Error": "Цитата не принадлежит автору"}, 400
         return quote.to_dict(), 200
 
+    @auth.login_required
     def post(self, author_id):
         parser = reqparse.RequestParser()
         parser.add_argument("text", required=True)
@@ -47,7 +48,7 @@ class QuoteResource(Resource):
         quote = QuoteModel(author, quote_data["text"])
         db.session.add(quote)
         db.session.commit()
-        return quote.to_dict(), 201
+        return quote_schema.dump(quote), 201
 
     # PUT: /authors/1/quotes/1
     # PUT: /authors/2/quotes/1  <-- 400 "Цитата не принадлежит автору"
