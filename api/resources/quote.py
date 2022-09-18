@@ -2,6 +2,7 @@ from api import Resource, reqparse, db, auth
 from api.models.author import AuthorModel
 from api.models.quote import QuoteModel
 from api.schemas.quote import quote_schema, quotes_schema
+from flask import g
 
 
 class QuoteListResource(Resource):
@@ -16,7 +17,9 @@ class QuoteListResource(Resource):
         quotes = author.quotes.all()
         return quotes_schema.dump(quotes), 200  # Возвращаем все цитаты автора
 
+    @auth.login_required
     def post(self, author_id):
+        print(g.user.username)
         parser = reqparse.RequestParser()
         parser.add_argument("text", required=True)
         quote_data = parser.parse_args()
