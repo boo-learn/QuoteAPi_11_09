@@ -1,4 +1,4 @@
-from api import Resource, reqparse, db
+from api import Resource, reqparse, db, auth
 from api.models.author import AuthorModel
 from api.models.quote import QuoteModel
 from api.schemas.quote import quote_schema, quotes_schema
