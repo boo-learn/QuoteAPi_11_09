@@ -7,8 +7,9 @@ class AuthorModel(db.Model):
     surname = db.Column(db.String(32))
     quotes = db.relationship('QuoteModel', backref='author', lazy='dynamic', cascade="all, delete-orphan")
 
-    def __init__(self, name):
+    def __init__(self, name, surname):
         self.name = name
+        self.surname = surname
 
     # def to_dict(self):
     #     return {

@@ -19,13 +19,14 @@ class AuthorResource(Resource):
         if author is None:
             return f"Author id={author_id} not found", 404
 
-        return author.to_dict(), 200
+        return author_schema.dump(author), 200
 
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument("name", required=True)
+        parser.add_argument("surname", required=True)
         author_data = parser.parse_args()
-        author = AuthorModel(author_data["name"])
+        author = AuthorModel(**author_data)
         db.session.add(author)
         db.session.commit()
         return author_schema.dump(author), 201
